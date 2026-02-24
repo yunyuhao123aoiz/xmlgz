@@ -1,0 +1,91 @@
+name: Auto Update EPG Files
+
+on:
+  schedule:
+    - cron: '5 17 * * *'   # 01:05 BJT
+    - cron: '35 2 * * *'   # 10:35 BJT
+    - cron: '25 7 * * *'   # 15:25 BJT
+  workflow_dispatch:
+  pull_request:
+    types: [closed]  # 当 PR 合并时也触发更新
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  update:
+    # 只在 PR 合并到 main 时运行，或者定时触发时运行
+    if: github.event.pull_request.merged == true || github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # 获取完整历史
+        
+    - name: Download EPG files
+      run: |
+        echo "开始下载 EPG 文件..."
+        
+        # 定义要下载的文件
+        files=(
+          "e.xml.gz"
+          "cc.xml.gz"
+          "all.xml.gz"
+          "allcc.xml.gz"
+        )
+        
+        # 下载每个文件
+        for file in "${files[@]}"; do
+          echo "下载 $file..."
+          
+          # 首先尝试从源站下载
+          if curl -L --fail --max-time 30 -o "$file" "http://e.erw.cc/$file"; then
+            echo "✅ $file 从源站下载成功"
+            
+          # 如果失败，尝试从原仓库下载
+          elif curl -L --fail --max-time 30 -o "$file" "https://raw.githubusercontent.com/kuke31/xmlgz/main/$file"; then
+            echo "✅ $file 从 kuke31 仓库下载成功"
+            
+          else
+            echo "❌ $file 下载失败"
+            exit 1
+          fi
+          
+          # 验证文件
+          if [ -f "$file" ]; then
+            size=$(stat -c%s "$file")
+            if [ "$size" -lt 100 ]; then
+              echo "❌ $file 文件太小 ($size 字节)"
+              exit 1
+            fi
+            echo "$file 大小: $size 字节"
+          fi
+        done
+        
+    - name: Commit and push
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        
+        # 添加文件
+        git add *.gz
+        
+        # 检查是否有更改
+        if git diff --staged --quiet; then
+          echo "没有文件更新"
+        else
+          # 提交更改
+          BEIJING_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')
+          git commit -m "更新节目单及压缩包-$BEIJING_TIME"
+          
+          # 推送到仓库
+          git push
+          echo "✅ 文件已更新"
+          
+          # 触发 Pages 部署
+          echo "UPDATED=true" >> $GITHUB_ENV
+        fi
