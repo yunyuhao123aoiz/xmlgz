@@ -1,54 +1,17 @@
-# Erw节目单
+# 节目单
 
-当天预告，七天回看，每天00:30 10:05 14:50 各更新一次。国内用户推荐使用 vip.erw.cc Key鉴权, 发送邮件到 kuke21#vip.qq.com(#换成@) 
+当天预告，七天回看，每天00:30 10:05 14:50 各更新一次。
 
-当天节目单文件：e.xml
-```
-http://e.erw.cc/e.xml
-```
-当天压缩包文件：e.xml.gz
-```
-http://e.erw.cc/e.xml.gz
-```
-```
-https://raw.githubusercontent.com/kuke31/xmlgz/main/e.xml.gz
-```
+## 文件说明
 
-当天央卫数文件：cc.xml
-```
-http://e.erw.cc/cc.xml
-```
+| 类型 | 文件 | 说明 |
+|---|---|---|
+| 当天节目单 | `e.xml` | 当天预告 |
+| 当天压缩包 | `e.xml.gz` | 当天预告（压缩） |
+| 当天央卫数 | `cc.xml` | 当天央视 + 卫视 |
+| 当天央卫数压缩包 | `cc.xml.gz` | 当天央卫数（压缩） |
+| 七天回看 | `all.xml` | 含当天，共 7 天 |
+| 七天回看压缩包 | `all.xml.gz` | 七天回看（压缩） |
+| 七天央卫数 | `allcc.xml` | 七天央卫数 |
+| 七天央卫数压缩包 | `allcc.xml.gz` | 七天央卫数（压缩） |
 
-当天央卫数压缩包文件：cc.xml.gz
-```
-http://e.erw.cc/cc.xml.gz
-```
-```
-https://raw.githubusercontent.com/kuke31/xmlgz/main/cc.xml.gz
-```
-
-回看七天（含当天）文件：all.xml
-```
-http://e.erw.cc/all.xml
-```
-
-回看七天压缩包（含当天）文件：all.xml.gz
-```
-http://e.erw.cc/all.xml.gz
-```
-```
-https://raw.githubusercontent.com/kuke31/xmlgz/main/all.xml.gz
-```
-
-回看七天央卫数文件：allcc.xml
-```
-http://e.erw.cc/allcc.xml
-```
-
-回看七天央卫数压缩包文件：allcc.xml.gz
-```
-http://e.erw.cc/allcc.xml.gz
-```
-```
-https://raw.githubusercontent.com/kuke31/xmlgz/main/allcc.xml.gz
-```
