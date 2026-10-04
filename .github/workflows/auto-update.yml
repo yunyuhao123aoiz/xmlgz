@@ -2,7 +2,7 @@ name: Auto Update EPG Files
 
 on:
   schedule:
-    - cron: '5 17 * * *'   # 01:05 BJT
+    - cron: '30 21 * * *'   # 05:30 BJT
     - cron: '35 2 * * *'   # 10:35 BJT
     - cron: '25 7 * * *'   # 15:25 BJT
   workflow_dispatch:
