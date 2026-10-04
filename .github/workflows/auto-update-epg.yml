@@ -49,15 +49,15 @@ jobs:
               "https://gitee.com/taksssss/tv/raw/main/epg/$file"; then
               echo "✅ $file 从 taksssss Gitee 下载成功"
 
-            # 源站 2：kuke31 通过 jsDelivr CDN（备用源）
+            # 源站 2：GitHub raw 直连（runner 在国外通常可直连）
+            elif curl -L --fail --max-time 120 -o "$file" \
+              "https://raw.githubusercontent.com/kuke31/xmlgz/main/$file"; then
+              echo "✅ $file 从 GitHub raw 下载成功"
+
+            # 源站 3：kuke31 通过 jsDelivr CDN
             elif curl -L --fail --max-time 120 -o "$file" \
               "https://cdn.jsdelivr.net/gh/kuke31/xmlgz@main/$file"; then
               echo "✅ $file 从 kuke31 jsDelivr 下载成功"
-
-            # 源站 3：gh-proxy 代理原始 raw（第三备用源）
-            elif curl -L --fail --max-time 120 -o "$file" \
-              "https://ghproxy.com/https://raw.githubusercontent.com/kuke31/xmlgz/main/$file"; then
-              echo "✅ $file 从 gh-proxy 下载成功"
 
             else
               echo "⚠️ $file 全部源下载失败，跳过"
