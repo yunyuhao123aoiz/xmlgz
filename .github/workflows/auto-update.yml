@@ -33,6 +33,9 @@ jobs:
         # 定义要下载的文件
         files=(
           "e.xml.gz"
+          "112114.xml.gz"
+          "erw.xml.gz"
+          "epgpw_hk.xml.gz"
           "cc.xml.gz"
           "all.xml.gz"
           "allcc.xml.gz"
@@ -43,7 +46,7 @@ jobs:
           echo "下载 $file..."
           
           # 首先尝试从源站下载
-          if curl -L --fail --max-time 30 -o "$file" "http://e.erw.cc/$file"; then
+          if curl -L --fail --max-time 30 -o "$file" "https://github.com/taksssss/tv/blob/main/epg/$file"; then
             echo "✅ $file 从源站下载成功"
             
           # 如果失败，尝试从原仓库下载
