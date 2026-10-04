@@ -22,7 +22,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # 获取完整历史
+          fetch-depth: 0
 
       - name: Download EPG files
         run: |
@@ -30,55 +30,63 @@ jobs:
 
           files=(
             "e.xml.gz"
-            "112114.xml.gz"
-            "erw.xml.gz"
-            "epgpw_hk.xml.gz"
             "cc.xml.gz"
             "all.xml.gz"
             "allcc.xml.gz"
+            "112114.xml.gz"
+            "epgpw_cn.xml.gz"
+            "epgpw_hk.xml.gz"
+            "epgpw_tw.xml.gz"
           )
+
+          failed=0
 
           for file in "${files[@]}"; do
             echo "下载 $file..."
 
-            # 源站 1：taksssss Gitee 镜像（国内推荐）
+            # 源站 1：taksssss Gitee（国内推荐，主源）
             if curl -L --fail --max-time 120 -o "$file" \
               "https://gitee.com/taksssss/tv/raw/main/epg/$file"; then
               echo "✅ $file 从 taksssss Gitee 下载成功"
 
-            # 源站 2：kuke31 通过 jsDelivr CDN
+            # 源站 2：kuke31 通过 jsDelivr CDN（备用源）
             elif curl -L --fail --max-time 120 -o "$file" \
               "https://cdn.jsdelivr.net/gh/kuke31/xmlgz@main/$file"; then
               echo "✅ $file 从 kuke31 jsDelivr 下载成功"
 
+            # 源站 3：gh-proxy 代理原始 raw（第三备用源）
+            elif curl -L --fail --max-time 120 -o "$file" \
+              "https://ghproxy.com/https://raw.githubusercontent.com/kuke31/xmlgz/main/$file"; then
+              echo "✅ $file 从 gh-proxy 下载成功"
+
             else
-              echo "❌ $file 下载失败"
-              exit 1
+              echo "⚠️ $file 全部源下载失败，跳过"
+              failed=1
+              continue
             fi
 
-            # 验证文件大小
-            if [ -f "$file" ]; then
-              size=$(stat -c%s "$file")
-              if [ "$size" -lt 100 ]; then
-                echo "❌ $file 文件太小 ($size 字节)"
-                exit 1
-              fi
-              echo "$file 大小: $size 字节"
-            else
-              echo "❌ $file 不存在"
-              exit 1
+            size=$(stat -c%s "$file")
+            if [ "$size" -lt 100 ]; then
+              echo "⚠️ $file 文件太小 ($size 字节)，跳过"
+              failed=1
+              continue
             fi
+            echo "$file 大小: $size 字节"
           done
+
+          if [ "$failed" -eq 1 ]; then
+            echo "部分文件下载失败，但继续提交已成功的文件"
+          else
+            echo "全部文件下载成功"
+          fi
 
       - name: Commit and push
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
 
-          # 添加文件
           git add *.gz
 
-          # 检查是否有更改
           if git diff --staged --quiet; then
             echo "没有文件更新"
           else
